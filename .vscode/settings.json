@@ -1,0 +1,14 @@
+{
+    "typescript.tsdk": "./node_modules/typescript/lib",
+    "emmet.triggerExpansionOnTab": true,
+    "search.exclude": {
+        "**/node_modules": true,
+        "**/dist": true,
+        "**/build": true,
+        "**/.vscode": true,
+        "**/coverage": true
+    },
+    "prettier.singleQuote": true,
+    "eslint.validate": ["javascript", "typescript"],
+    "prettier.eslintIntegration": true
+}
