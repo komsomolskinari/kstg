@@ -21,10 +21,9 @@ export interface Position {
     column: number;
 }
 
-export type Node = Script | Content;
+export type Node = Script | Content | CommandParameter;
 
 export interface Script extends _Node<'Script'> {
-    // filename?: string | undefined; // keep filename, as some instruction depends on it
     flavor: 'vanilla' | 'yuzusoft'; //  kag|kagex?
     contents: Content[];
 }
