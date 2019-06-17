@@ -1,4 +1,4 @@
-import { State, stepLocation, e } from './common';
+import { State, stepLocation, e, Context } from './common';
 import { NUL, BS, BEL, HT, LF, VT, FF, CR } from './tokens';
 
 /**
@@ -97,11 +97,12 @@ export function readSpaces(s: State): void {
     }
 }
 
-export function readEscapeSequence(s: State): string {
+export function readEscapeSequence(c: Context, s: State): string {
     if (!stepIf(s, '\\')) e(s, 'Expected Escape sequence:' + curChar(s));
-    let c = curChar(s);
-    switch (c) {
+    const ch = curChar(s);
+    switch (ch) {
         case 'u':
+            if (!c.unicodeEscape) e(s, '\\u support disabled');
             // JS Unicode mode
             // \uxxxx
             // \u{??????}
@@ -128,12 +129,11 @@ export function readEscapeSequence(s: State): string {
         case 'x':
             // TJS Unicode
             // \xu{1,4},max match
-
             let xStr = '';
             for (let p = 0; p < 4; p++) {
-                let ch = nextChar(s);
-                if (ch === undefined || !ch.match(/^[0-9a-f]+$/i)) break;
-                xStr += ch;
+                let nch = nextChar(s);
+                if (nch === undefined || !nch.match(/^[0-9a-f]+$/i)) break;
+                xStr += nch;
                 stepChar(s);
             }
             stepChar(s);
@@ -152,30 +152,36 @@ export function readEscapeSequence(s: State): string {
                 t: HT,
                 v: VT
             };
-            const ch = convMap[c];
+            const mch = convMap[ch];
             stepChar(s);
-            if (ch === undefined) {
-                return c;
-            } else return ch;
+            if (mch === undefined) {
+                return ch;
+            } else return mch;
     }
 }
 
-export function readQuotedString(s: State): string {
+export function readQuotedString(c: Context, s: State): string {
     const q = curChar(s);
     if (q !== '"' && q !== "'") {
         e(s, 'Unexpected quote char, actual:' + q);
     }
     stepIf(s, q);
     let r = '';
-    while (1) {
-        let check = curChar(s) === '\\';
-        if (check) {
-            const es = readEscapeSequence(s);
-            r += es;
-        } else if (curChar(s) === q && !check) break;
-        else {
-            r += curChar(s);
-            stepChar(s);
+    outerLoop: while (1) {
+        switch (curChar(s)) {
+            case '\\':
+                const es = readEscapeSequence(c, s);
+                r += es;
+                break;
+            case q:
+                break outerLoop;
+            case '\r':
+            case '\n':
+                e(s, 'newline is not allowed');
+            default:
+                r += curChar(s);
+                stepChar(s);
+                break;
         }
     }
     return r;

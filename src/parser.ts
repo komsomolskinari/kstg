@@ -57,7 +57,7 @@ export function parseCommandParameter(c: Context, s: State): CommandParameter {
         readSpaces(s);
         if (curChar(s) !== '"' && curChar(s) !== "'")
             readAsStringUntil(s, /\p{Zs}|=/u);
-        else readQuotedString(s);
+        else readQuotedString(c, s);
     }
 
     let n: CommandParameter = {

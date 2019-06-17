@@ -1,109 +1,130 @@
 import { readEscapeSequence } from '../../src/lexer';
-import { initState } from '../../src/common';
+import { initState, initContext } from '../../src/common';
 import { ReverseSolidus, BEL, BS, HT, LF, VT, FF, CR } from '../../src/tokens';
 
 describe('string escape', () => {
     test('check invalid', () => {
         expect(() =>
-            readEscapeSequence(initState('must start with \\'))
+            readEscapeSequence(initContext(), initState('must start with \\'))
         ).toThrow();
     });
     describe('u', () => {
         test('basic', () => {
-            let s = initState(ReverseSolidus + 'u4e00');
-            expect(readEscapeSequence(s)).toBe('一');
+            expect(
+                readEscapeSequence(initContext(), initState('\\u4e00'))
+            ).toBe('一');
         });
         test('twice', () => {
-            let s = initState(
-                ReverseSolidus + 'u4e01' + ReverseSolidus + 'u4e00'
-            );
-            expect(readEscapeSequence(s)).toBe('丁');
-            expect(readEscapeSequence(s)).toBe('一');
+            let s = initState('\\u4e01\\u4e00');
+            let c = initContext();
+            expect(readEscapeSequence(c, s)).toBe('丁');
+            expect(readEscapeSequence(c, s)).toBe('一');
         });
         test('bracketed', () => {
-            let s = initState(
-                ReverseSolidus + 'u{4e01}' + ReverseSolidus + 'u{414}'
-            );
-            expect(readEscapeSequence(s)).toBe('丁');
-            expect(readEscapeSequence(s)).toBe('Д');
+            let s = initState('\\u{4e01}\\u{414}');
+            expect(readEscapeSequence(initContext(), s)).toBe('丁');
+            expect(readEscapeSequence(initContext(), s)).toBe('Д');
+        });
+
+        test('correct step', () => {
+            let s = initState('\\u1234');
+            readEscapeSequence(initContext(), s);
+            expect(s.ptr).toBe(6);
         });
 
         test('non hex', () => {
-            let s = initState(ReverseSolidus + 'u{4q}');
-            expect(() => readEscapeSequence(s)).toThrow();
+            let c = initContext();
+            expect(() => readEscapeSequence(c, initState('\\u{4q}'))).toThrow();
+            expect(() => readEscapeSequence(c, initState('\\u4q17'))).toThrow();
         });
-        test('correct step', () => {
-            const s = initState('\\u1234');
-            readEscapeSequence(s);
-            expect(s.ptr).toBe(6);
+
+        test('non number should fail', () => {
+            expect(() =>
+                readEscapeSequence(initContext(), initState('\\u\\u1234'))
+            ).toThrow();
         });
     });
+
     describe('x', () => {
         test('basic', () => {
-            let s = initState(ReverseSolidus + 'x4e00');
-            expect(readEscapeSequence(s)).toBe('一');
+            expect(
+                readEscapeSequence(initContext(), initState('\\x4e00'))
+            ).toBe('一');
         });
 
         test('twice', () => {
-            let s = initState(
-                ReverseSolidus + 'x4e01' + ReverseSolidus + 'x4e00'
-            );
-            expect(readEscapeSequence(s)).toBe('丁');
-            expect(readEscapeSequence(s)).toBe('一');
+            let s = initState('\\x4e01\\x4e00');
+            let c = initContext();
+            expect(readEscapeSequence(c, s)).toBe('丁');
+            expect(readEscapeSequence(c, s)).toBe('一');
         });
         test('limit digit', () => {
-            let s = initState(ReverseSolidus + 'x4e0123456');
-            expect(readEscapeSequence(s)).toBe('丁');
+            let s = initState('\\x4e0123456');
+            expect(readEscapeSequence(initContext(), s)).toBe('丁');
             expect(s.ptr).toBe(6);
         });
 
-        test('early limit digit', () => {
-            let s = initState(ReverseSolidus + 'x4e' + ReverseSolidus + 'x4ek');
-            expect(readEscapeSequence(s)).toBe('N');
-            expect(readEscapeSequence(s)).toBe('N');
+        test('early limit digit with \\', () => {
+            let s = initState('\\x4e\\x4ek');
+            let c = initContext();
+            expect(readEscapeSequence(c, s)).toBe('N');
+            expect(readEscapeSequence(c, s)).toBe('N');
             expect(s.ptr).toBe(8);
         });
+
+        test('early limit digit with char', () => {
+            let s = initState('\\x4ekaaa');
+            expect(readEscapeSequence(initContext(), s)).toBe('N');
+            expect(s.ptr).toBe(4);
+        });
+
         test('correct step', () => {
             const s = initState('\\x1234');
-            readEscapeSequence(s);
+            readEscapeSequence(initContext(), s);
             expect(s.ptr).toBe(6);
         });
     });
 
     describe('alpha', () => {
         test('normal', () => {
-            expect(readEscapeSequence(initState('\\a'))).toBe(BEL);
-            expect(readEscapeSequence(initState('\\b'))).toBe(BS);
-            expect(readEscapeSequence(initState('\\t'))).toBe(HT);
-            expect(readEscapeSequence(initState('\\n'))).toBe(LF);
-            expect(readEscapeSequence(initState('\\v'))).toBe(VT);
-            expect(readEscapeSequence(initState('\\f'))).toBe(FF);
-            expect(readEscapeSequence(initState('\\r'))).toBe(CR);
+            const c = initContext();
+            expect(readEscapeSequence(c, initState('\\a'))).toBe(BEL);
+            expect(readEscapeSequence(c, initState('\\b'))).toBe(BS);
+            expect(readEscapeSequence(c, initState('\\t'))).toBe(HT);
+            expect(readEscapeSequence(c, initState('\\n'))).toBe(LF);
+            expect(readEscapeSequence(c, initState('\\v'))).toBe(VT);
+            expect(readEscapeSequence(c, initState('\\f'))).toBe(FF);
+            expect(readEscapeSequence(c, initState('\\r'))).toBe(CR);
         });
 
         test('special', () => {
-            expect(readEscapeSequence(initState('\\0'))).toBe('\0');
-            expect(readEscapeSequence(initState('\\"'))).toBe('"');
-            expect(readEscapeSequence(initState("\\'"))).toBe("'");
-            expect(readEscapeSequence(initState('\\\\'))).toBe('\\');
+            const c = initContext();
+            expect(readEscapeSequence(c, initState('\\0'))).toBe('\0');
+            expect(readEscapeSequence(c, initState('\\"'))).toBe('"');
+            expect(readEscapeSequence(c, initState("\\'"))).toBe("'");
+            expect(readEscapeSequence(c, initState('\\\\'))).toBe('\\');
         });
 
         test('correct step', () => {
             const s = initState("\\'\\0");
-            expect(readEscapeSequence(s)).toBe("'");
+            const c = initContext();
+            expect(readEscapeSequence(c, s)).toBe("'");
             expect(s.ptr).toBe(2);
-            expect(readEscapeSequence(s)).toBe('\0');
+            expect(readEscapeSequence(c, s)).toBe('\0');
             expect(s.ptr).toBe(4);
         });
 
         test("don't escape", () => {
-            expect(readEscapeSequence(initState('\\江'))).toBe('江');
+            const c = initContext();
+            expect(readEscapeSequence(c, initState('\\江'))).toBe('江');
+            expect(readEscapeSequence(c, initState('\\z'))).toBe('z');
         });
 
         test('continuous', () => {
-            const s = initState(ReverseSolidus.repeat(4));
-            expect(readEscapeSequence(s)).toBe('\\');
-            expect(readEscapeSequence(s)).toBe('\\');
+            const s = initState('\\'.repeat(4));
+            const c = initContext();
+            expect(readEscapeSequence(c, s)).toBe('\\');
+            expect(readEscapeSequence(c, s)).toBe('\\');
         });
     });
 });

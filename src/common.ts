@@ -3,6 +3,8 @@ import { Node } from './kstree';
 export interface Context {
     loc?: boolean;
     range?: boolean;
+
+    unicodeEscape?: boolean;
 }
 
 export interface State {
@@ -19,6 +21,15 @@ export function initState(src: string): State {
         line: 1,
         column: 0
     };
+}
+
+export function initContext(ctx: Context = {}): Context {
+    const defaultCtx = {
+        loc: true,
+        range: true,
+        unicodeEscape: true
+    };
+    return Object.assign(defaultCtx, ctx);
 }
 
 export function e(state: State, msg: string): never {
