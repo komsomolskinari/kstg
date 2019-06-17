@@ -43,6 +43,15 @@ describe('string escape', () => {
                 readEscapeSequence(initContext(), initState('\\u\\u1234'))
             ).toThrow();
         });
+
+        test('when \\u disabled should fail', () => {
+            expect(() =>
+                readEscapeSequence(
+                    initContext({ unicodeEscape: false }),
+                    initState('\\u')
+                )
+            ).toThrow();
+        });
     });
 
     describe('x', () => {

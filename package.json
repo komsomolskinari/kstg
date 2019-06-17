@@ -4,7 +4,8 @@
     "description": "Kirikiri KAG script parser",
     "main": "dist/index.js",
     "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
+        "test": "npx jest",
+        "lint": "npx eslint {test,src}/**/*.ts"
     },
     "author": "Komsomolsk Inari (https://github.com/komsomolskinari)",
     "license": "0-BSD",

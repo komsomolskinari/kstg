@@ -26,9 +26,8 @@ export function nextIs(s: State, str: string | string[]): boolean {
     const _str = typeof str === 'string' ? [str] : str;
     for (const _s of _str) {
         const actual = s.src.substr(s.ptr, _s.length);
-        if (actual === str) return true;
+        if (actual === _s) return true;
     }
-
     return false;
 }
 

@@ -48,6 +48,9 @@ describe('quoted string', () => {
         expect(() =>
             readQuotedString(initContext(), initState('"awsl\n"'))
         ).toThrow();
+        expect(() =>
+            readQuotedString(initContext(), initState('"awsl\r\n"'))
+        ).toThrow();
     });
 
     test('invalid start should fail', () => {

@@ -5,6 +5,7 @@ export interface Context {
     range?: boolean;
 
     unicodeEscape?: boolean;
+    noCommentLabel?: boolean;
 }
 
 export interface State {
@@ -24,10 +25,11 @@ export function initState(src: string): State {
 }
 
 export function initContext(ctx: Context = {}): Context {
-    const defaultCtx = {
+    const defaultCtx: Context = {
         loc: true,
         range: true,
-        unicodeEscape: true
+        unicodeEscape: true,
+        noCommentLabel: true
     };
     return Object.assign(defaultCtx, ctx);
 }
