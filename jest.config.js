@@ -4,5 +4,5 @@ module.exports = {
     roots: ['<rootDir>'],
     testRegex: [/test[0-9a-zA-Z\/_-]+\.ts$/],
     collectCoverage: true,
-    forceCoverageMatch: ['**/*.ts']
+    forceCoverageMatch: ['**/*.ts'] // Workaround for coverage broken in --watch
 };

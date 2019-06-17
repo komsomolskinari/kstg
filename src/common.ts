@@ -56,10 +56,3 @@ export function addLocation(c: Context, s: State, s0: State, node: Node): Node {
     }
     return node;
 }
-
-export function deleteLocation(node: Node): Node {
-    delete node.start;
-    delete node.end;
-    delete node.loc;
-    return node;
-}
