@@ -1,14 +1,35 @@
-import { State, stepLocation, e, Context } from './common';
+import { State, e, Context } from './common';
 import { NUL, BS, BEL, HT, LF, VT, FF, CR } from './tokens';
+
+function splitByNewline(str: string): string[] {
+    return str.split('\r\n').reduce((p: string[], s): string[] => {
+        p.push(...s.split(/\r|\n/));
+        return p;
+    }, []);
+}
+
+export function stepLocation(s: State, step = 1): void {
+    const jumped = s.src.substr(s.ptr, step);
+    const lines = splitByNewline(jumped);
+    s.line += lines.length - 1;
+    if (lines.length > 1) s.column = 0;
+    s.column += (lines.pop() || []).length;
+    s.ptr += step;
+}
 
 /**
  * Check next string, without step
  * @param s
  * @param str
  */
-function nextIs(s: State, str: string): boolean {
-    const actual = s.src.substr(s.ptr, str.length);
-    return actual === str;
+export function nextIs(s: State, str: string | string[]): boolean {
+    const _str = typeof str === 'string' ? [str] : str;
+    for (const _s of _str) {
+        const actual = s.src.substr(s.ptr, _s.length);
+        if (actual === str) return true;
+    }
+
+    return false;
 }
 
 /**
@@ -16,11 +37,15 @@ function nextIs(s: State, str: string): boolean {
  * @param s
  * @param str
  */
-function stepIf(s: State, str: string): boolean {
-    if (nextIs(s, str)) {
-        stepLocation(s, str.length);
-        return true;
-    } else return false;
+export function stepIf(s: State, str: string | string[]): boolean {
+    const _str = typeof str === 'string' ? [str] : str;
+    for (const _s of _str) {
+        if (nextIs(s, _s)) {
+            stepLocation(s, _s.length);
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
@@ -36,8 +61,8 @@ export function curChar(s: State): string {
  * Get next char
  * @param s
  */
-function nextChar(s: State): string {
-    if (s.ptr + 1 > s.src.length) e(s, 'Next char Read over EOF');
+export function nextChar(s: State): string {
+    // if (s.ptr + 1 > s.src.length) e(s, 'Next char Read over EOF');
     return s.src[s.ptr + 1];
 }
 
@@ -50,7 +75,7 @@ export function stepChar(s: State): string {
     return curChar(s);
 }
 
-function isSpace(str: string): boolean {
+export function isSpace(str: string): boolean {
     if (str === undefined) return false;
     // Seems they supported it.
     else return str.match(/\p{Zs}/gu) !== null;
@@ -72,10 +97,18 @@ export function readLeftSquareBracket(s: State): boolean {
     return stepIf(s, '[');
 }
 
+export function readRightSquareBracket(s: State): boolean {
+    return stepIf(s, ']');
+}
+
 export function readEqualSign(s: State): boolean {
     return stepIf(s, '=');
 }
 
+export function eolAhead(s: State): boolean {
+    return nextIs(s, ['\r', '\n']) || nextChar(s) === undefined;
+}
+// TODO: drop re support
 export function readAsStringUntil(s: State, until: string | RegExp): string {
     let ret = '';
 
@@ -95,6 +128,16 @@ export function readSpaces(s: State): void {
     while (isSpace(curChar(s))) {
         stepLocation(s);
     }
+}
+
+export function readNewline(s: State): boolean {
+    return stepIf(s, '\r\n') ? true : stepIf(s, ['\r', '\n']);
+}
+
+// TODO: finx stepping
+export function readNewlines(s: State): void {
+    readNewline(s);
+    while (readNewline(s) ? true : readSpaces(s));
 }
 
 export function readEscapeSequence(c: Context, s: State): string {

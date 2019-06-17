@@ -1,4 +1,4 @@
-import { readSpaces } from '../../src/lexer';
+import { readSpaces, eolAhead } from '../../src/lexer';
 import { initState } from '../../src/common';
 describe('lexer - space', () => {
     test('end with eof', () => {
@@ -24,4 +24,8 @@ describe('lexer - space', () => {
         readSpaces(s);
         expect(s.ptr).toBe(4);
     });
+});
+
+test('eol', () => {
+    expect(eolAhead(initState(''))).toBe(true);
 });

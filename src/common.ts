@@ -52,7 +52,7 @@ export function addLocation(c: Context, s: State, s0: State, node: Node): Node {
                 column: s.column
             }
         };
-        node.loc.source = s.src.substring(s0.ptr, s.ptr);
+        node.loc.source = s.src.substring(s0.ptr, s.ptr).trim();
     }
     return node;
 }
@@ -62,13 +62,4 @@ export function deleteLocation(node: Node): Node {
     delete node.end;
     delete node.loc;
     return node;
-}
-
-export function stepLocation(s: State, step = 1): void {
-    const jumped = s.src.substr(s.ptr, step);
-    const lines = jumped.split(/\r?\n|\n/g);
-    s.line += lines.length - 1;
-    if (lines.length > 1) s.column = 0;
-    s.column += (lines.pop() || []).length;
-    s.ptr++;
 }

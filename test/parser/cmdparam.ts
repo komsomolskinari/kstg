@@ -11,7 +11,7 @@ describe('parser - command parameter', () => {
             value: undefined,
             loc: {
                 end: { column: 2, line: 1 },
-                source: 't ',
+                source: 't',
                 start: { column: 0, line: 1 }
             },
             start: 0,
