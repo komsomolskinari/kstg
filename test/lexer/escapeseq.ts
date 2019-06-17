@@ -1,6 +1,6 @@
 import { readEscapeSequence } from '../../src/lexer';
 import { initState, initContext } from '../../src/common';
-import { ReverseSolidus, BEL, BS, HT, LF, VT, FF, CR } from '../../src/tokens';
+import { BEL, BS, HT, LF, VT, FF, CR } from '../../src/tokens';
 
 describe('string escape', () => {
     test('check invalid', () => {

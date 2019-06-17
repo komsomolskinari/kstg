@@ -45,7 +45,7 @@ function nextChar(s: State): string {
  * Step to next character and return it
  * @param s
  */
-function stepChar(s: State): string {
+export function stepChar(s: State): string {
     stepLocation(s, 1);
     return curChar(s);
 }
