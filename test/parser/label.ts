@@ -65,20 +65,26 @@ describe('parser - label', () => {
         });
     });
 
-    /*test('no comment', () => {
+    test('no comment', () => {
         var s = initState('*tag\n');
         const l = parseLabel(initContext(), s);
         expect(l).toEqual({
             type: 'Label',
             name: 'tag',
-            comment: 'cmt',
             start: 0,
-            end: 10,
+            end: 5,
             loc: {
                 start: { line: 1, column: 0 },
                 end: { line: 2, column: 0 },
-                source: '*tag|cmt'
+                source: '*tag'
             }
         });
-    });*/
+    });
+
+    test('no comment disabled', () => {
+        var s = initState('*tag\n');
+        expect(() =>
+            parseLabel(initContext({ noCommentLabel: false }), s)
+        ).toThrow();
+    });
 });

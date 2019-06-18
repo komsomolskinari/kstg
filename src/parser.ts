@@ -19,7 +19,10 @@ import { pZs, EOF, EOL } from './tokens';
 export function parseLabel(c: Context, s: State): Label {
     let s0 = JSON.parse(JSON.stringify(s));
     readAsterisk(s);
-    const name = readNonQuoteString(s, '|');
+    const name = readNonQuoteString(
+        s,
+        ['|'].concat(c.noCommentLabel ? EOL : [])
+    );
     const n: Label = {
         type: 'Label',
         name: name
