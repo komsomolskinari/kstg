@@ -1,5 +1,5 @@
 import { State, e, Context } from './common';
-import { NUL, BS, BEL, HT, LF, VT, FF, CR } from './tokens';
+import { NUL, BS, BEL, HT, LF, VT, FF, CR, pZs } from './tokens';
 
 function splitByNewline(str: string): string[] {
     return str.split('\r\n').reduce((p: string[], s): string[] => {
@@ -89,9 +89,11 @@ export function stepChar(s: State): string {
 }
 
 export function isSpace(str: string): boolean {
+    // str.split('').every((k: string): boolean => pZs.includes(k));
     if (str === undefined) return false;
-    // Seems they supported it.
-    else return str.match(/\p{Zs}/gu) !== null;
+    // ('\p{Zs}' Seems they supported it.
+    // No, they don't... V8 only?
+    else return str.split('').every((k: string): boolean => pZs.includes(k));
 }
 
 export function readAsterisk(s: State): boolean {

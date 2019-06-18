@@ -10,4 +10,4 @@ branches:
 
 # Run npm test always
 script:
-    - 'npm test'
+    - 'npm run coverage'
