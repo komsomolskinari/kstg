@@ -212,4 +212,8 @@ describe('parser - command', () => {
             });
         });
     });
+
+    test('unexpected start', () => {
+        expect(() => parseCommand(initContext(), initState('aaa'))).toThrow();
+    });
 });
