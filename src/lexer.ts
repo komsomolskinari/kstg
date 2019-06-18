@@ -89,35 +89,10 @@ export function stepChar(s: State): string {
 }
 
 export function isSpace(str: string): boolean {
-    // str.split('').every((k: string): boolean => pZs.includes(k));
     if (str === undefined) return false;
-    // ('\p{Zs}' Seems they supported it.
+    // ('\p{Zs}') Seems they supported it.
     // No, they don't... V8 only?
     else return str.split('').every((k: string): boolean => pZs.includes(k));
-}
-
-export function readAsterisk(s: State): boolean {
-    return stepIf(s, '*');
-}
-
-export function readVerticalLine(s: State): boolean {
-    return stepIf(s, '|');
-}
-
-export function readCommercialAt(s: State): boolean {
-    return stepIf(s, '@');
-}
-
-export function readLeftSquareBracket(s: State): boolean {
-    return stepIf(s, '[');
-}
-
-export function readRightSquareBracket(s: State): boolean {
-    return stepIf(s, ']');
-}
-
-export function readEqualSign(s: State): boolean {
-    return stepIf(s, '=');
 }
 
 export function eolAhead(s: State): boolean {

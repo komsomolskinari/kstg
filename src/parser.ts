@@ -1,24 +1,19 @@
 import { Context, State, addLocation, e } from './common';
 import { Label, Command, CommandParameter } from './kstree';
 import {
-    readAsterisk,
     readNonQuoteString,
-    readVerticalLine,
-    readCommercialAt,
-    readLeftSquareBracket,
     readSpaces,
-    readEqualSign,
     curChar,
     readQuotedString,
     stepChar,
     eolAhead,
-    readRightSquareBracket,
-    readNewlines
+    readNewlines,
+    stepIf
 } from './lexer';
 import { pZs, EOF, EOL } from './tokens';
 export function parseLabel(c: Context, s: State): Label {
     let s0 = JSON.parse(JSON.stringify(s));
-    readAsterisk(s);
+    stepIf(s, '*');
     const name = readNonQuoteString(
         s,
         ['|'].concat(c.noCommentLabel ? EOL : [])
@@ -27,7 +22,7 @@ export function parseLabel(c: Context, s: State): Label {
         type: 'Label',
         name: name
     };
-    if (readVerticalLine(s)) {
+    if (stepIf(s, '|')) {
         n.comment = readNonQuoteString(s, EOL);
     }
     readNewlines(s);
@@ -39,7 +34,7 @@ export function parseCommandParameter(c: Context, s: State): CommandParameter {
     let key = readNonQuoteString(s, [']', '=', EOF].concat(pZs));
     readSpaces(s);
     let value: string | number | undefined = undefined;
-    if (readEqualSign(s)) {
+    if (stepIf(s, '=')) {
         readSpaces(s);
         if (curChar(s) !== '"' && curChar(s) !== "'") {
             let rawValue = readNonQuoteString(s, [']', '='].concat(pZs));
@@ -82,12 +77,12 @@ export function parseCommand(c: Context, s: State): Command {
     let s0 = JSON.parse(JSON.stringify(s));
     let name = '';
     let param: CommandParameter[] = [];
-    if (readCommercialAt(s)) {
+    if (stepIf(s, '@')) {
         [name, param] = parseCommandContent(c, s);
         readNewlines(s);
-    } else if (readLeftSquareBracket(s)) {
+    } else if (stepIf(s, '[')) {
         [name, param] = parseCommandContent(c, s);
-        readRightSquareBracket(s);
+        stepIf(s, ']');
     } else {
         e(s, 'parseCommand fail');
     }

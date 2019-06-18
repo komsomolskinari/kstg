@@ -62,3 +62,7 @@ export interface Label extends _Node<'Label'> {
 export interface Comment extends _Node<'Comment'> {
     raw: string;
 }
+
+export interface Literal extends _Node<'Literal'> {
+    value: string | number | boolean;
+}

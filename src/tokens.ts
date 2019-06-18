@@ -1,7 +1,3 @@
-export const Apostrophe = '\u0027'; // '
-export const QuotationMark = '\u0022'; // "
-export const ReverseSolidus = '\u005c'; // \
-
 export const NUL = '\0';
 export const BEL = '\x07';
 export const BS = '\x08';

@@ -10,5 +10,6 @@
     },
     "prettier.singleQuote": true,
     "eslint.validate": ["javascript", "typescript"],
-    "prettier.eslintIntegration": true
+    "prettier.eslintIntegration": true,
+    "eslint.enable": true
 }
