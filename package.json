@@ -5,6 +5,8 @@
     "main": "dist/index.js",
     "scripts": {
         "test": "npx jest",
+        "test:watch": "npx jest --watch",
+        "coverage": "npx jest --all --coverage",
         "lint": "npx eslint {test,src}/**/*.ts"
     },
     "author": "Komsomolsk Inari (https://github.com/komsomolskinari)",
@@ -18,9 +20,7 @@
         "eslint-plugin-prettier": "^3.1.0",
         "jest": "^24.8.0",
         "ts-jest": "^24.0.2",
-        "typescript": "^3.5.1",
-        "webpack": "^4.33.0",
-        "webpack-cli": "^3.3.4"
+        "typescript": "^3.5.1"
     },
     "dependencies": {}
 }
