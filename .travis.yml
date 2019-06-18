@@ -11,3 +11,4 @@ branches:
 # Run npm test always
 script:
     - 'npm run coverage'
+    - 'npm run coveralls'

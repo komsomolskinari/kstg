@@ -7,7 +7,8 @@
         "test": "npx jest",
         "test:watch": "npx jest --watch",
         "coverage": "npx jest --all --coverage",
-        "lint": "npx eslint {test,src}/**/*.ts"
+        "lint": "npx eslint {test,src}/**/*.ts",
+        "coveralls": "cat ./coverage/lcov.info | coveralls"
     },
     "author": "Komsomolsk Inari (https://github.com/komsomolskinari)",
     "license": "0-BSD",
@@ -15,6 +16,7 @@
         "@types/jest": "^24.0.13",
         "@typescript-eslint/eslint-plugin": "^1.10.2",
         "@typescript-eslint/parser": "^1.10.2",
+        "coveralls": "^3.0.4",
         "eslint": "^5.16.0",
         "eslint-config-prettier": "^4.3.0",
         "eslint-plugin-prettier": "^3.1.0",
