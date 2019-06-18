@@ -2,7 +2,7 @@ import { Context, State, addLocation, e } from './common';
 import { Label, Command, CommandParameter } from './kstree';
 import {
     readAsterisk,
-    readAsStringUntil,
+    readNonQuoteString,
     readVerticalLine,
     readCommercialAt,
     readLeftSquareBracket,
@@ -15,16 +15,17 @@ import {
     readRightSquareBracket,
     readNewlines
 } from './lexer';
+import { pZs, EOF, EOL } from './tokens';
 export function parseLabel(c: Context, s: State): Label {
     let s0 = JSON.parse(JSON.stringify(s));
     readAsterisk(s);
-    const name = readAsStringUntil(s, '|');
+    const name = readNonQuoteString(s, '|');
     const n: Label = {
         type: 'Label',
         name: name
     };
     if (readVerticalLine(s)) {
-        n.comment = readAsStringUntil(s, /\r|\n/);
+        n.comment = readNonQuoteString(s, EOL);
     }
     readNewlines(s);
     return addLocation(c, s, s0, n) as Label;
@@ -32,13 +33,13 @@ export function parseLabel(c: Context, s: State): Label {
 
 export function parseCommandParameter(c: Context, s: State): CommandParameter {
     let s0 = JSON.parse(JSON.stringify(s));
-    let key = readAsStringUntil(s, /\p{Zs}|=|\]/u);
+    let key = readNonQuoteString(s, [']', '=', EOF].concat(pZs));
     readSpaces(s);
     let value: string | number | undefined = undefined;
     if (readEqualSign(s)) {
         readSpaces(s);
         if (curChar(s) !== '"' && curChar(s) !== "'") {
-            let rawValue = readAsStringUntil(s, /\p{Zs}|=|\]/u);
+            let rawValue = readNonQuoteString(s, [']', '='].concat(pZs));
             let intValue = parseInt(rawValue);
             value =
                 isFinite(intValue) && rawValue.match(/^[0-9]+$/)
@@ -64,7 +65,7 @@ function parseCommandContent(
 ): [string, CommandParameter[]] {
     const r: [string, CommandParameter[]] = ['', []];
     readSpaces(s);
-    r[0] = readAsStringUntil(s, /\p{Zs}|\]/u);
+    r[0] = readNonQuoteString(s, [']', ''].concat(pZs));
 
     readSpaces(s);
     while (!eolAhead(s) && curChar(s) !== ']') {

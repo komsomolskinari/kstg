@@ -121,16 +121,11 @@ export function readEqualSign(s: State): boolean {
 export function eolAhead(s: State): boolean {
     return nextIs(s, ['\r', '\n']) || curChar(s) === undefined;
 }
-// TODO: drop re support
-export function readAsStringUntil(s: State, until: string | RegExp): string {
-    let ret = '';
 
-    const comp = // comparator, to support end when matched regex
-        typeof until === 'string'
-            ? (str: string): boolean => str !== until
-            : (str: string): boolean =>
-                  typeof str === 'string' ? str.match(until) === null : false;
-    while (comp(curChar(s))) {
+export function readNonQuoteString(s: State, until: string | string[]): string {
+    let ret = '';
+    let _until = strParamToArray(until);
+    while (!nextIs(s, _until)) {
         ret += curChar(s);
         stepLocation(s);
     }
@@ -147,7 +142,6 @@ export function readNewline(s: State): boolean {
     return stepIf(s, '\r\n') ? true : stepIf(s, ['\r', '\n']);
 }
 
-// TODO: finx stepping
 export function readNewlines(s: State): void {
     readNewline(s);
     while (readNewline(s) ? true : readSpaces(s));

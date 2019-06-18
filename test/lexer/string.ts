@@ -1,7 +1,7 @@
 import { initState, initContext } from '../../src/common';
-import { readQuotedString } from '../../src/lexer';
+import { readQuotedString, readNonQuoteString } from '../../src/lexer';
 
-describe('quoted string', () => {
+describe('lexer - quoted string', () => {
     test('double', () => {
         expect(readQuotedString(initContext(), initState(`"aws l"`))).toEqual(
             'aws l'
@@ -55,5 +55,21 @@ describe('quoted string', () => {
 
     test('invalid start should fail', () => {
         expect(() => readQuotedString(initContext(), initState('a'))).toThrow();
+    });
+});
+
+describe('lexer - quoteless string', () => {
+    test('basic', () => {
+        expect(readNonQuoteString(initState('asdfghjkl'), 'j')).toBe('asdfgh');
+    });
+
+    test('throw at eof', () => {
+        expect(() => readNonQuoteString(initState('asdfghjkl'), 'm')).toThrow();
+    });
+
+    test('dont throw if check eof', () => {
+        expect(readNonQuoteString(initState('asdfghjkl'), '')).toBe(
+            'asdfghjkl'
+        );
     });
 });
