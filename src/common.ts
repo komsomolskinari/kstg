@@ -24,6 +24,10 @@ export function initState(src: string): State {
     };
 }
 
+export function copyState(s: State): State {
+    return JSON.parse(JSON.stringify(s));
+}
+
 export function initContext(ctx: Context = {}): Context {
     const defaultCtx: Context = {
         loc: true,

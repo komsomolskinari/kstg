@@ -7,7 +7,17 @@ describe('parser - label', () => {
         const l = parseLabel(initContext(), s);
         expect(l).toEqual({
             type: 'Label',
-            name: 'tag',
+            name: {
+                type: 'Identifier',
+                name: 'tag',
+                start: 1,
+                end: 4,
+                loc: {
+                    start: { line: 1, column: 1 },
+                    end: { line: 1, column: 4 },
+                    source: 'tag'
+                }
+            },
             comment: 'cmt',
             start: 0,
             end: 10,
@@ -24,7 +34,17 @@ describe('parser - label', () => {
         const l = parseLabel(initContext(), s);
         expect(l).toEqual({
             type: 'Label',
-            name: 'tag',
+            name: {
+                type: 'Identifier',
+                name: 'tag',
+                start: 1,
+                end: 4,
+                loc: {
+                    start: { line: 1, column: 1 },
+                    end: { line: 1, column: 4 },
+                    source: 'tag'
+                }
+            },
             comment: 'cmt ; more',
             start: 0,
             end: 15,
@@ -41,7 +61,17 @@ describe('parser - label', () => {
         let c = initContext();
         expect(parseLabel(c, s)).toEqual({
             type: 'Label',
-            name: 'tag',
+            name: {
+                type: 'Identifier',
+                name: 'tag',
+                start: 1,
+                end: 4,
+                loc: {
+                    start: { line: 1, column: 1 },
+                    end: { line: 1, column: 4 },
+                    source: 'tag'
+                }
+            },
             comment: 'cmt',
             start: 0,
             end: 12,
@@ -53,7 +83,17 @@ describe('parser - label', () => {
         });
         expect(parseLabel(c, s)).toEqual({
             type: 'Label',
-            name: 'tag2',
+            name: {
+                type: 'Identifier',
+                name: 'tag2',
+                start: 13,
+                end: 17,
+                loc: {
+                    start: { line: 3, column: 1 },
+                    end: { line: 3, column: 5 },
+                    source: 'tag2'
+                }
+            },
             comment: 'cmt',
             start: 12,
             end: 23,
@@ -70,7 +110,17 @@ describe('parser - label', () => {
         const l = parseLabel(initContext(), s);
         expect(l).toEqual({
             type: 'Label',
-            name: 'tag',
+            name: {
+                type: 'Identifier',
+                name: 'tag',
+                start: 1,
+                end: 4,
+                loc: {
+                    start: { line: 1, column: 1 },
+                    end: { line: 1, column: 4 },
+                    source: 'tag'
+                }
+            },
             start: 0,
             end: 5,
             loc: {

@@ -1,5 +1,5 @@
-import { Context, State, addLocation, e } from './common';
-import { Label, Command, CommandParameter } from './kstree';
+import { Context, State, addLocation, e, copyState } from './common';
+import { Label, Command, CommandParameter, Identifier } from './kstree';
 import {
     readNonQuoteString,
     readSpaces,
@@ -11,13 +11,32 @@ import {
     stepIf
 } from './lexer';
 import { pZs, EOF, EOL } from './tokens';
+
+export function parseIdentifier(
+    c: Context,
+    s: State,
+    end: string | string[] = EOL
+): Identifier {
+    let s0 = copyState(s);
+    const i: Identifier = {
+        type: 'Identifier',
+        name: readNonQuoteString(s, end)
+    };
+    return addLocation(c, s, s0, i) as Identifier;
+}
+
 export function parseLabel(c: Context, s: State): Label {
-    let s0 = JSON.parse(JSON.stringify(s));
+    let s0 = copyState(s);
     stepIf(s, '*');
-    const name = readNonQuoteString(
+    const name = parseIdentifier(
+        c,
         s,
         ['|'].concat(c.noCommentLabel ? EOL : [])
     );
+    /*const name = readNonQuoteString(
+        s,
+        ['|'].concat(c.noCommentLabel ? EOL : [])
+    );*/
     const n: Label = {
         type: 'Label',
         name: name
@@ -30,7 +49,7 @@ export function parseLabel(c: Context, s: State): Label {
 }
 
 export function parseCommandParameter(c: Context, s: State): CommandParameter {
-    let s0 = JSON.parse(JSON.stringify(s));
+    let s0 = copyState(s);
     let key = readNonQuoteString(s, [']', '=', EOF].concat(pZs));
     readSpaces(s);
     let value: string | number | undefined = undefined;
@@ -74,7 +93,7 @@ function parseCommandContent(
 }
 
 export function parseCommand(c: Context, s: State): Command {
-    let s0 = JSON.parse(JSON.stringify(s));
+    let s0 = copyState(s);
     let name = '';
     let param: CommandParameter[] = [];
     if (stepIf(s, '@')) {

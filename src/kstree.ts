@@ -21,7 +21,7 @@ export interface Position {
     column: number;
 }
 
-export type Node = Script | Content | CommandParameter;
+export type Node = Script | Content | CommandParameter | Literal | Identifier;
 
 export interface Script extends _Node<'Script'> {
     flavor: 'vanilla' | 'yuzusoft'; //  kag|kagex?
@@ -44,9 +44,7 @@ export interface CommandParameter extends _Node<'CommandParameter'> {
 
 export interface Text extends _Node<'Text'> {
     raw: string; // always keep raw string
-    speaker?: TextSpeaker;
-    //speaker?: string; // optional, yuzusoft mode only
-    //as?: string; // ...
+    speaker?: TextSpeaker; // KAGEX only
 }
 
 export interface TextSpeaker extends _Node<'TextSpeaker'> {
@@ -55,12 +53,16 @@ export interface TextSpeaker extends _Node<'TextSpeaker'> {
 }
 
 export interface Label extends _Node<'Label'> {
-    name: string;
+    name: Identifier;
     comment?: string;
 }
 
 export interface Comment extends _Node<'Comment'> {
     raw: string;
+}
+
+export interface Identifier extends _Node<'Identifier'> {
+    name: string;
 }
 
 export interface Literal extends _Node<'Literal'> {
