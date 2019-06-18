@@ -67,7 +67,7 @@ function parseCommandContent(
     r[0] = readAsStringUntil(s, /\p{Zs}|\]/u);
 
     readSpaces(s);
-    while (!eolAhead(s)) {
+    while (!eolAhead(s) && curChar(s) !== ']') {
         r[1].push(parseCommandParameter(c, s));
         readSpaces(s);
     }

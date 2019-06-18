@@ -17,14 +17,28 @@ export function stepLocation(s: State, step = 1): void {
     s.ptr += step;
 }
 
+function strParamToArray(str: string | string[]): string[] {
+    const r =
+        typeof str === 'string'
+            ? [str]
+            : // match longest prefix
+              str.sort((a: string, b: string): number => b.length - a.length);
+    return r;
+}
+
 /**
  * Check next string, without step
  * @param s
  * @param str
  */
 export function nextIs(s: State, str: string | string[]): boolean {
-    const _str = typeof str === 'string' ? [str] : str;
+    const _str = strParamToArray(str);
     for (const _s of _str) {
+        if (!_s) {
+            // check eof
+            if (s.src.substr(s.ptr).length == 0) return true;
+            else break;
+        }
         const actual = s.src.substr(s.ptr, _s.length);
         if (actual === _s) return true;
     }
@@ -37,7 +51,7 @@ export function nextIs(s: State, str: string | string[]): boolean {
  * @param str
  */
 export function stepIf(s: State, str: string | string[]): boolean {
-    const _str = typeof str === 'string' ? [str] : str;
+    const _str = strParamToArray(str);
     for (const _s of _str) {
         if (nextIs(s, _s)) {
             stepLocation(s, _s.length);
@@ -61,7 +75,7 @@ export function curChar(s: State): string {
  * @param s
  */
 export function nextChar(s: State): string {
-    // if (s.ptr + 1 > s.src.length) e(s, 'Next char Read over EOF');
+    if (s.ptr + 1 > s.src.length) e(s, 'Next char Read over EOF');
     return s.src[s.ptr + 1];
 }
 
@@ -105,7 +119,7 @@ export function readEqualSign(s: State): boolean {
 }
 
 export function eolAhead(s: State): boolean {
-    return nextIs(s, ['\r', '\n']) || nextChar(s) === undefined;
+    return nextIs(s, ['\r', '\n']) || curChar(s) === undefined;
 }
 // TODO: drop re support
 export function readAsStringUntil(s: State, until: string | RegExp): string {
