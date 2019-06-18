@@ -32,13 +32,13 @@ export interface Script extends _Node<'Script'> {
 export type Content = Command | Text | Label | Comment;
 
 export interface Command extends _Node<'Command'> {
-    name: string; // zero length (or newline): crlf virtual command
+    name: Identifier; // zero length (or newline): crlf virtual command
     parameters: CommandParameter[];
-    raw?: string | undefined;
+    raw?: string;
 }
 
 export interface CommandParameter extends _Node<'CommandParameter'> {
-    name: string;
+    name: Identifier;
     value: string | number | undefined; // undefined means no value used
 }
 
@@ -48,8 +48,8 @@ export interface Text extends _Node<'Text'> {
 }
 
 export interface TextSpeaker extends _Node<'TextSpeaker'> {
-    name: string;
-    as: string;
+    name: Identifier;
+    as: Identifier;
 }
 
 export interface Label extends _Node<'Label'> {

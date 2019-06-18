@@ -50,7 +50,7 @@ export function parseLabel(c: Context, s: State): Label {
 
 export function parseCommandParameter(c: Context, s: State): CommandParameter {
     let s0 = copyState(s);
-    let key = readNonQuoteString(s, [']', '=', EOF].concat(pZs));
+    let key = parseIdentifier(c, s, [']', '=', EOF].concat(pZs));
     readSpaces(s);
     let value: string | number | undefined = undefined;
     if (stepIf(s, '=')) {
@@ -79,22 +79,22 @@ export function parseCommandParameter(c: Context, s: State): CommandParameter {
 function parseCommandContent(
     c: Context,
     s: State
-): [string, CommandParameter[]] {
-    const r: [string, CommandParameter[]] = ['', []];
+): [Identifier, CommandParameter[]] {
+    const r: CommandParameter[] = [];
     readSpaces(s);
-    r[0] = readNonQuoteString(s, [']', ''].concat(pZs));
+    const i = parseIdentifier(c, s, [']', ''].concat(pZs));
 
     readSpaces(s);
     while (!eolAhead(s) && curChar(s) !== ']') {
-        r[1].push(parseCommandParameter(c, s));
+        r.push(parseCommandParameter(c, s));
         readSpaces(s);
     }
-    return r;
+    return [i, r];
 }
 
 export function parseCommand(c: Context, s: State): Command {
     let s0 = copyState(s);
-    let name = '';
+    let name: Identifier = { type: 'Identifier', name: '' };
     let param: CommandParameter[] = [];
     if (stepIf(s, '@')) {
         [name, param] = parseCommandContent(c, s);

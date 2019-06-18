@@ -7,7 +7,17 @@ describe('parser - command parameter', () => {
         let s = initState('t a');
         expect(parseCommandParameter(c, s)).toEqual({
             type: 'CommandParameter',
-            name: 't',
+            name: {
+                type: 'Identifier',
+                name: 't',
+                start: 0,
+                end: 1,
+                loc: {
+                    start: { column: 0, line: 1 },
+                    end: { column: 1, line: 1 },
+                    source: 't'
+                }
+            },
             value: undefined,
             loc: {
                 end: { column: 2, line: 1 },
@@ -24,7 +34,17 @@ describe('parser - command parameter', () => {
         let s = initState('t = a123 ');
         expect(parseCommandParameter(c, s)).toEqual({
             type: 'CommandParameter',
-            name: 't',
+            name: {
+                type: 'Identifier',
+                name: 't',
+                start: 0,
+                end: 1,
+                loc: {
+                    start: { column: 0, line: 1 },
+                    end: { column: 1, line: 1 },
+                    source: 't'
+                }
+            },
             value: 'a123',
             start: 0,
             end: 8,
@@ -41,7 +61,17 @@ describe('parser - command parameter', () => {
         let s = initState('t = "123" ');
         expect(parseCommandParameter(c, s)).toEqual({
             type: 'CommandParameter',
-            name: 't',
+            name: {
+                type: 'Identifier',
+                name: 't',
+                start: 0,
+                end: 1,
+                loc: {
+                    start: { column: 0, line: 1 },
+                    end: { column: 1, line: 1 },
+                    source: 't'
+                }
+            },
             value: '123',
             start: 0,
             end: 9,
@@ -58,7 +88,17 @@ describe('parser - command parameter', () => {
         let s = initState('t = 123 ');
         expect(parseCommandParameter(c, s)).toEqual({
             type: 'CommandParameter',
-            name: 't',
+            name: {
+                type: 'Identifier',
+                name: 't',
+                start: 0,
+                end: 1,
+                loc: {
+                    start: { column: 0, line: 1 },
+                    end: { column: 1, line: 1 },
+                    source: 't'
+                }
+            },
             value: 123,
             start: 0,
             end: 7,
@@ -75,7 +115,17 @@ describe('parser - command parameter', () => {
         let s = initState('t=123 ');
         expect(parseCommandParameter(c, s)).toEqual({
             type: 'CommandParameter',
-            name: 't',
+            name: {
+                type: 'Identifier',
+                name: 't',
+                start: 0,
+                end: 1,
+                loc: {
+                    start: { column: 0, line: 1 },
+                    end: { column: 1, line: 1 },
+                    source: 't'
+                }
+            },
             value: 123,
             start: 0,
             end: 5,
