@@ -4,7 +4,9 @@ import {
     Command,
     CommandParameter,
     Identifier,
-    Literal
+    Literal,
+    CookedText,
+    Text
 } from './kstree';
 import {
     readNonQuoteString,
@@ -16,7 +18,7 @@ import {
     readNewlines,
     stepIf
 } from './lexer';
-import { pZs, EOF, EOL } from './tokens';
+import { pZs, EOF, EOL, CJKLSB, CJKRSB } from './tokens';
 
 export function parseIdentifier(
     c: Context,
@@ -125,4 +127,56 @@ export function parseCommand(c: Context, s: State): Command {
         parameters: param
     };
     return addLocation(c, s, s0, n) as Command;
+}
+
+export function parseLiteralFromNonQuotedString(
+    c: Context,
+    s: State,
+    end: string | string[]
+): Literal {
+    let s0 = copyState(s);
+    const i: Literal = {
+        type: 'Literal',
+        value: readNonQuoteString(s, end)
+    };
+    return addLocation(c, s, s0, i) as Literal;
+}
+
+export function parseCookedText(c: Context, s: State): CookedText {
+    const s0 = copyState(s);
+    const r: CookedText = {
+        type: 'CookedText',
+        said: {
+            type: 'Literal',
+            value: ''
+        }
+    };
+    if (stepIf(s, CJKLSB)) {
+        r.name = parseIdentifier(c, s, ['/', CJKRSB]);
+        if (stepIf(s, '/')) {
+            r.as = parseIdentifier(c, s, [CJKRSB]);
+        }
+        stepIf(s, CJKRSB);
+    }
+    r.said = parseLiteralFromNonQuotedString(
+        c,
+        s,
+        ['*', '|', '@', '['].concat(EOL)
+    );
+    return addLocation(c, s, s0, r) as CookedText;
+}
+
+export function parseText(c: Context, s: State): Text {
+    const s0 = copyState(s);
+    const r: Text = {
+        type: 'Text',
+        raw: ''
+    };
+    if (!c.kagex) {
+        r.raw = readNonQuoteString(s, ['*', '|', '@', '['].concat(EOL));
+    } else {
+        r.cooked = parseCookedText(c, s);
+        r.raw = s.src.substring(s0.ptr, s.ptr);
+    }
+    return addLocation(c, s, s0, r) as Text;
 }

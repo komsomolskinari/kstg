@@ -7,6 +7,9 @@ export const VT = '\x0b';
 export const FF = '\x0c';
 export const CR = '\x0d';
 
+export const CJKLSB = '【';
+export const CJKRSB = '】';
+
 // Special flag EOF
 export const EOF = '';
 

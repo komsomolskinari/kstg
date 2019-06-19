@@ -6,6 +6,8 @@ export interface Context {
 
     unicodeEscape?: boolean;
     noCommentLabel?: boolean;
+
+    kagex?: boolean;
 }
 
 export interface State {
@@ -33,7 +35,8 @@ export function initContext(ctx: Context = {}): Context {
         loc: true,
         range: true,
         unicodeEscape: true,
-        noCommentLabel: true
+        noCommentLabel: true,
+        kagex: true
     };
     return Object.assign(defaultCtx, ctx);
 }

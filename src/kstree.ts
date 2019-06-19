@@ -21,7 +21,13 @@ export interface Position {
     column: number;
 }
 
-export type Node = Script | Content | CommandParameter | Literal | Identifier;
+export type Node =
+    | Script
+    | Content
+    | CommandParameter
+    | Literal
+    | Identifier
+    | CookedText;
 
 export interface Script extends _Node<'Script'> {
     flavor: 'vanilla' | 'yuzusoft'; //  kag|kagex?
@@ -44,12 +50,13 @@ export interface CommandParameter extends _Node<'CommandParameter'> {
 
 export interface Text extends _Node<'Text'> {
     raw: string; // always keep raw string
-    speaker?: TextSpeaker; // KAGEX only
+    cooked?: CookedText; // KAGEX only
 }
 
-export interface TextSpeaker extends _Node<'TextSpeaker'> {
-    name: Identifier;
-    as: Identifier;
+export interface CookedText extends _Node<'CookedText'> {
+    name?: Identifier;
+    as?: Identifier;
+    said: Literal;
 }
 
 export interface Label extends _Node<'Label'> {
