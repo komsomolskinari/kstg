@@ -113,7 +113,6 @@ describe('parser - command', () => {
                                 source: 'p1'
                             }
                         },
-                        value: undefined,
                         start: 6,
                         end: 9,
                         loc: {
@@ -135,7 +134,17 @@ describe('parser - command', () => {
                                 source: 'p2'
                             }
                         },
-                        value: 'str',
+                        value: {
+                            type: 'Literal',
+                            value: 'str',
+                            start: 14,
+                            end: 17,
+                            loc: {
+                                start: { line: 1, column: 14 },
+                                end: { line: 1, column: 17 },
+                                source: 'str'
+                            }
+                        },
                         start: 9,
                         end: 17,
                         loc: {
@@ -288,7 +297,6 @@ describe('parser - command', () => {
                                 source: 'p1'
                             }
                         },
-                        value: undefined,
                         start: 6,
                         end: 9,
                         loc: {
@@ -310,7 +318,17 @@ describe('parser - command', () => {
                                 source: 'p2'
                             }
                         },
-                        value: 'str',
+                        value: {
+                            type: 'Literal',
+                            value: 'str',
+                            start: 14,
+                            end: 17,
+                            loc: {
+                                start: { line: 1, column: 14 },
+                                end: { line: 1, column: 17 },
+                                source: 'str'
+                            }
+                        },
                         start: 9,
                         end: 17,
                         loc: {

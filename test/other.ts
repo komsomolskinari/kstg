@@ -1,5 +1,5 @@
 import { initContext, initState } from '../src/common';
-import { parseCommand } from '../src/parser';
+import { parseCommand, parseIdentifier } from '../src/parser';
 
 /* Just try to achieve 100% coverage*/
 
@@ -12,5 +12,20 @@ describe('other', () => {
         expect(r).not.toHaveProperty('loc');
         expect(r).not.toHaveProperty('start');
         expect(r).not.toHaveProperty('end');
+    });
+
+    test('read identifier until eol', () => {
+        expect(parseIdentifier(initContext(), initState('aaa\nbbbb'))).toEqual({
+            type: 'Identifier',
+            name: 'aaa',
+
+            start: 0,
+            end: 3,
+            loc: {
+                start: { line: 1, column: 0 },
+                end: { line: 1, column: 3 },
+                source: 'aaa'
+            }
+        });
     });
 });

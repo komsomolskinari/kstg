@@ -39,7 +39,7 @@ export interface Command extends _Node<'Command'> {
 
 export interface CommandParameter extends _Node<'CommandParameter'> {
     name: Identifier;
-    value: string | number | undefined; // undefined means no value used
+    value?: Literal; // undefined means no value used
 }
 
 export interface Text extends _Node<'Text'> {
