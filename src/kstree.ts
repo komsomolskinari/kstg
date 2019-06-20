@@ -30,7 +30,7 @@ export type Node =
     | CookedText;
 
 export interface Script extends _Node<'Script'> {
-    flavor: 'vanilla' | 'yuzusoft'; //  kag|kagex?
+    flavor?: 'vanilla' | 'yuzusoft'; //  kag|kagex?
     contents: Content[];
 }
 
@@ -38,7 +38,7 @@ export interface Script extends _Node<'Script'> {
 export type Content = Command | Text | Label | Comment;
 
 export interface Command extends _Node<'Command'> {
-    name: Identifier; // zero length (or newline): crlf virtual command
+    name: Identifier | null; // null: crlf virtual command
     parameters: CommandParameter[];
     raw?: string;
 }

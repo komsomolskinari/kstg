@@ -1,14 +1,12 @@
 language: node_js
 node_js:
-    - '8'
-    - '10'
-    - '11'
-    - '12'
+    - '8'   # EOL at 2019-12-31
+    - '10'  # EOL at 2021-04-01
+    - '12'  # EOL at 2022-04-01
 branches:
     only:
         - master
 
-# Run npm test always
 script:
     - 'npm run coverage'
     - 'npm run coveralls'

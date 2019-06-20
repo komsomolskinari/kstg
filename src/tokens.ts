@@ -13,7 +13,7 @@ export const CJKRSB = '】';
 // Special flag EOF
 export const EOF = '';
 
-export const EOL = [EOF, CR, LF];
+export const EOL = [EOF, CR, LF, CR + LF];
 
 export const pZs = [
     '\u0020',

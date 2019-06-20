@@ -6,7 +6,10 @@ import {
     Identifier,
     Literal,
     CookedText,
-    Text
+    Text,
+    Script,
+    Content,
+    Comment
 } from './kstree';
 import {
     readNonQuoteString,
@@ -16,7 +19,8 @@ import {
     stepChar,
     eolAhead,
     readNewlines,
-    stepIf
+    stepIf,
+    nextIs
 } from './lexer';
 import { pZs, EOF, EOL, CJKLSB, CJKRSB } from './tokens';
 
@@ -179,4 +183,68 @@ export function parseText(c: Context, s: State): Text {
         r.raw = s.src.substring(s0.ptr, s.ptr);
     }
     return addLocation(c, s, s0, r) as Text;
+}
+
+export function eolTransform(c: Context, s: State): Command | Comment {
+    const s0 = copyState(s);
+    if (!stepIf(s, EOL)) e(s, 'Expect EOL');
+
+    if (c.kagex) {
+        const n: Command = {
+            type: 'Command',
+            name: null,
+            parameters: []
+        };
+        return addLocation(c, s, s0, n) as Command;
+    } else {
+        const n: Comment = {
+            type: 'Comment',
+            raw: '\r\n'
+        };
+        return addLocation(c, s, s0, n) as Command;
+    }
+}
+
+export function parseComment(c: Context, s: State): Comment {
+    const s0 = copyState(s);
+    if (!stepIf(s, ';')) e(s, 'expect comment start');
+    const n: Comment = {
+        type: 'Comment',
+        raw: readNonQuoteString(s, EOL)
+    };
+    stepIf(s, EOL);
+    return addLocation(c, s, s0, n) as Comment;
+}
+
+export function parseScript(c: Context, s: State): Script {
+    const s0 = copyState(s);
+    const st: Content[] = [];
+
+    while (!nextIs(s, EOF)) {
+        switch (curChar(s)) {
+            case '[':
+            case '@':
+                st.push(parseCommand(c, s));
+                break;
+            case ';':
+                st.push(parseComment(c, s));
+                break;
+            case '*':
+                st.push(parseLabel(c, s));
+                break;
+            case '\r':
+            case '\n':
+                st.push(eolTransform(c, s));
+                break;
+            default:
+                st.push(parseText(c, s));
+                break;
+        }
+    }
+
+    const n: Script = {
+        type: 'Script',
+        contents: st
+    };
+    return addLocation(c, s, s0, n) as Script;
 }

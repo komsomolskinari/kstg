@@ -1,12 +1,17 @@
-/* Parse test/examples/*.ks, 
+/* Parse test/examples/*.ks, (done)
 use test/examples/*-config.json if exist,
 compare with test/example/*-expected.json if exist
 TODO: WIP
 */
+import { parse } from '../src/index';
+import { readdirSync, readFileSync } from 'fs';
 
-// Abuse Jest, let's generate some test case, we need this ability
-for (let index = 0; index < 5; index++) {
-    test(index + '', () => {
-        expect(index).toBe(index);
+const exampleRoot = 'test/examples';
+const f = readdirSync(exampleRoot);
+
+f.forEach(n => {
+    test(n, () => {
+        const s = readFileSync(exampleRoot + '/' + n).toString();
+        expect(() => parse(s)).not.toThrow();
     });
-}
+});
