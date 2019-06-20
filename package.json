@@ -12,6 +12,10 @@
         "lint": "npx eslint {test,src}/**/*.ts",
         "coveralls": "cat ./coverage/lcov.info | coveralls"
     },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/komsomolskinari/kstg"
+    },
     "author": "Komsomolsk Inari (https://github.com/komsomolskinari)",
     "license": "0-BSD",
     "devDependencies": {
