@@ -2,10 +2,7 @@
 
 [![Build Status](https://travis-ci.org/komsomolskinari/kstg.svg?branch=master)](https://travis-ci.org/komsomolskinari/kstg)
 [![Coverage Status](https://coveralls.io/repos/github/komsomolskinari/kstg/badge.svg?branch=master)](https://coveralls.io/github/komsomolskinari/kstg?branch=master)
-
-Kirikiri 引擎 KAG3 语言解析器
-
-**还没有写'main函数'，不能跑**
+[![npm version](https://badge.fury.io/js/kstg.svg)](https://badge.fury.io/js/kstg)
 
 本项目是对[tenshin.js](https://github.com/komsomolskinari/tenshin.js)中KAG脚本解析器的重写。项目计划用于替换原有解析器并作为其他Kirikiri相关语言解析器的基础。
 
