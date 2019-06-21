@@ -8,5 +8,6 @@ branches:
         - master
 
 script:
-    - 'npm run coverage'
-    - 'npm run coveralls'
+    - 'npm run build'       # build with tsc
+    - 'npm run coverage'    # test and generate coveage
+    - 'npm run coveralls'   # send coverage

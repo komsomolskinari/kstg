@@ -1,5 +1,6 @@
 import { initContext, initState } from '../src/common';
 import { parseCommand, parseIdentifier } from '../src/parser';
+import { parse } from '../src';
 
 /* Just try to achieve 100% coverage*/
 
@@ -27,5 +28,9 @@ describe('other', () => {
                 source: 'aaa'
             }
         });
+    });
+
+    test('parser accepts undefined context', () => {
+        expect(() => parse('[a]')).not.toThrow();
     });
 });

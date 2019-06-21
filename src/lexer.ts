@@ -120,7 +120,6 @@ export function readNewline(s: State): boolean {
 }
 
 export function readNewlines(s: State): void {
-    readNewline(s);
     while (readNewline(s) ? true : readSpaces(s));
 }
 

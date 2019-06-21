@@ -1,5 +1,5 @@
 import { initState, initContext } from '../../src/common';
-import { parseCommand } from '../../src/parser';
+import { parseCommand, eolTransform } from '../../src/parser';
 
 describe('parser - command', () => {
     describe('@', () => {
@@ -188,7 +188,7 @@ describe('parser - command', () => {
     });
     describe('[]', () => {
         test('basic', () => {
-            const s = initState('[name]');
+            const s = initState('[name]\n\n\n');
             const c = initContext();
 
             expect(parseCommand(c, s)).toEqual({
@@ -206,9 +206,9 @@ describe('parser - command', () => {
                 },
                 parameters: [],
                 start: 0,
-                end: 6,
+                end: 9,
                 loc: {
-                    end: { column: 6, line: 1 },
+                    end: { column: 0, line: 4 },
                     source: '[name]',
                     start: { column: 0, line: 1 }
                 }
@@ -369,9 +369,35 @@ describe('parser - command', () => {
                 }
             });
         });
+
+        test('correct end', () => {
+            expect(parseCommand(initContext(), initState('[a]b')).end).toBe(3);
+        });
     });
 
     test('unexpected start', () => {
         expect(() => parseCommand(initContext(), initState('aaa'))).toThrow();
+    });
+
+    describe('EOL virtual cmd', () => {
+        test('basic', () => {
+            expect(eolTransform(initContext(), initState('\r\n'))).toEqual({
+                end: 2,
+                loc: {
+                    end: { column: 0, line: 2 },
+                    source: '',
+                    start: { column: 0, line: 1 }
+                },
+                name: null,
+                parameters: [],
+                start: 0,
+                type: 'Command'
+            });
+        });
+        test('fail', () => {
+            expect(() =>
+                eolTransform(initContext(), initState('1\r\n'))
+            ).toThrow();
+        });
     });
 });

@@ -37,6 +37,21 @@ export function parseIdentifier(
     return addLocation(c, s, s0, i) as Identifier;
 }
 
+export function parseComment(
+    c: Context,
+    s: State,
+    labelComment = false
+): Comment {
+    const s0 = copyState(s);
+    if (!stepIf(s, ';') && !labelComment) e(s, 'expect comment start');
+    const n: Comment = {
+        type: 'Comment',
+        raw: readNonQuoteString(s, EOL).trim()
+    };
+    readNewlines(s);
+    return addLocation(c, s, s0, n) as Comment;
+}
+
 export function parseLabel(c: Context, s: State): Label {
     let s0 = copyState(s);
     stepIf(s, '*');
@@ -50,7 +65,7 @@ export function parseLabel(c: Context, s: State): Label {
         name: name
     };
     if (stepIf(s, '|')) {
-        n.comment = readNonQuoteString(s, EOL);
+        n.comment = parseComment(c, s, true);
     }
     readNewlines(s);
     return addLocation(c, s, s0, n) as Label;
@@ -82,7 +97,7 @@ export function parseLiteral(c: Context, s: State): Literal {
 
 export function parseCommandParameter(c: Context, s: State): CommandParameter {
     let s0 = copyState(s);
-    let key = parseIdentifier(c, s, [']', '=', EOF].concat(pZs));
+    let key = parseIdentifier(c, s, [']', '='].concat(pZs).concat(EOL));
     readSpaces(s);
     let n: CommandParameter = {
         type: 'CommandParameter',
@@ -102,7 +117,7 @@ function parseCommandContent(
 ): [Identifier, CommandParameter[]] {
     const r: CommandParameter[] = [];
     readSpaces(s);
-    const i = parseIdentifier(c, s, [']', ''].concat(pZs));
+    const i = parseIdentifier(c, s, [']', ''].concat(pZs).concat(EOL));
 
     readSpaces(s);
     while (!eolAhead(s) && curChar(s) !== ']') {
@@ -112,6 +127,8 @@ function parseCommandContent(
     return [i, r];
 }
 
+// EOL after Text is a command in KAGEX...
+// So we read a more EOL at Command
 export function parseCommand(c: Context, s: State): Command {
     let s0 = copyState(s);
     let name: Identifier = { type: 'Identifier', name: '' };
@@ -122,6 +139,7 @@ export function parseCommand(c: Context, s: State): Command {
     } else if (stepIf(s, '[')) {
         [name, param] = parseCommandContent(c, s);
         stepIf(s, ']');
+        if (nextIs(s, EOL)) readNewlines(s);
     } else {
         e(s, 'parseCommand fail');
     }
@@ -185,35 +203,16 @@ export function parseText(c: Context, s: State): Text {
     return addLocation(c, s, s0, r) as Text;
 }
 
-export function eolTransform(c: Context, s: State): Command | Comment {
+export function eolTransform(c: Context, s: State): Command {
     const s0 = copyState(s);
     if (!stepIf(s, EOL)) e(s, 'Expect EOL');
-
-    if (c.kagex) {
-        const n: Command = {
-            type: 'Command',
-            name: null,
-            parameters: []
-        };
-        return addLocation(c, s, s0, n) as Command;
-    } else {
-        const n: Comment = {
-            type: 'Comment',
-            raw: '\r\n'
-        };
-        return addLocation(c, s, s0, n) as Command;
-    }
-}
-
-export function parseComment(c: Context, s: State): Comment {
-    const s0 = copyState(s);
-    if (!stepIf(s, ';')) e(s, 'expect comment start');
-    const n: Comment = {
-        type: 'Comment',
-        raw: readNonQuoteString(s, EOL)
+    readNewlines(s);
+    const n: Command = {
+        type: 'Command',
+        name: null,
+        parameters: []
     };
-    stepIf(s, EOL);
-    return addLocation(c, s, s0, n) as Comment;
+    return addLocation(c, s, s0, n) as Command;
 }
 
 export function parseScript(c: Context, s: State): Script {
@@ -227,14 +226,16 @@ export function parseScript(c: Context, s: State): Script {
                 st.push(parseCommand(c, s));
                 break;
             case ';':
-                st.push(parseComment(c, s));
+                const cmt = parseComment(c, s);
+                if (c.commentInAST) st.push(cmt);
                 break;
             case '*':
                 st.push(parseLabel(c, s));
                 break;
             case '\r':
             case '\n':
-                st.push(eolTransform(c, s));
+                const vcmd = eolTransform(c, s);
+                if (c.kagex) st.push(vcmd);
                 break;
             default:
                 st.push(parseText(c, s));

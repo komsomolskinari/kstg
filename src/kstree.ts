@@ -61,7 +61,7 @@ export interface CookedText extends _Node<'CookedText'> {
 
 export interface Label extends _Node<'Label'> {
     name: Identifier;
-    comment?: string;
+    comment?: Comment;
 }
 
 export interface Comment extends _Node<'Comment'> {

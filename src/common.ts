@@ -8,6 +8,7 @@ export interface Context {
     noCommentLabel?: boolean;
 
     kagex?: boolean;
+    commentInAST?: boolean;
 }
 
 export interface State {
@@ -36,7 +37,8 @@ export function initContext(ctx: Context = {}): Context {
         range: true,
         unicodeEscape: true,
         noCommentLabel: true,
-        kagex: true
+        kagex: true,
+        commentInAST: true
     };
     return Object.assign(defaultCtx, ctx);
 }

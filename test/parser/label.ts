@@ -18,7 +18,17 @@ describe('parser - label', () => {
                     source: 'tag'
                 }
             },
-            comment: 'cmt',
+            comment: {
+                type: 'Comment',
+                raw: 'cmt',
+                start: 5,
+                end: 10,
+                loc: {
+                    start: { line: 1, column: 5 },
+                    end: { line: 2, column: 0 },
+                    source: 'cmt'
+                }
+            },
             start: 0,
             end: 10,
             loc: {
@@ -45,7 +55,17 @@ describe('parser - label', () => {
                     source: 'tag'
                 }
             },
-            comment: 'cmt ; more',
+            comment: {
+                type: 'Comment',
+                raw: 'cmt ; more',
+                start: 5,
+                end: 15,
+                loc: {
+                    start: { line: 1, column: 5 },
+                    end: { line: 1, column: 15 },
+                    source: 'cmt ; more'
+                }
+            },
             start: 0,
             end: 15,
             loc: {
@@ -72,7 +92,17 @@ describe('parser - label', () => {
                     source: 'tag'
                 }
             },
-            comment: 'cmt',
+            comment: {
+                type: 'Comment',
+                raw: 'cmt',
+                start: 5,
+                end: 12,
+                loc: {
+                    start: { line: 1, column: 5 },
+                    end: { line: 3, column: 0 },
+                    source: 'cmt'
+                }
+            },
             start: 0,
             end: 12,
             loc: {
@@ -94,7 +124,17 @@ describe('parser - label', () => {
                     source: 'tag2'
                 }
             },
-            comment: 'cmt',
+            comment: {
+                type: 'Comment',
+                raw: 'cmt',
+                start: 18,
+                end: 23,
+                loc: {
+                    start: { line: 3, column: 6 },
+                    end: { line: 4, column: 0 },
+                    source: 'cmt'
+                }
+            },
             start: 12,
             end: 23,
             loc: {
